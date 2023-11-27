@@ -1,7 +1,10 @@
+"use client";
+import { AuthContext } from "../component/provider";
 import Link from "next/link";
-import React from "react";
+import React, { useContext } from "react";
 
-const header = () => {
+const Header = () => {
+  const { user } = useContext(AuthContext);
   return (
     <nav className=" flex items-center justify-between">
       <h2 className="text-5xl">Todo App</h2>
@@ -12,12 +15,16 @@ const header = () => {
         <Link className="mx-2" href={"/about"}>
           About
         </Link>
-        <Link className="mx-2" href={"/login"}>
-          Login
-        </Link>
+        {user ? (
+          <Link className="mx-2" href={"/login"}>
+            Login
+          </Link>
+        ) : (
+          <button className="mx-2">Logout</button>
+        )}
       </ul>
     </nav>
   );
 };
 
-export default header;
+export default Header;
