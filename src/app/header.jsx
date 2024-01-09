@@ -12,16 +12,6 @@ const Header = () => {
         <Link className="mx-2" href={"/"}>
           Home
         </Link>
-        <Link className="mx-2" href={"/about"}>
-          About
-        </Link>
-        {user ? (
-          <Link className="mx-2" href={"/login"}>
-            Login
-          </Link>
-        ) : (
-          <button className="mx-2">Logout</button>
-        )}
       </ul>
     </nav>
   );
