@@ -1,10 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import swal from "sweetalert";
 
 export default function Modal() {
   const existTask = JSON.parse(localStorage.getItem("task")) || [];
+  const [priorityFilter, setPriorityFilter] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [task, setTask] = useState(existTask);
+  const tasksPerPage = 10;
   const {
     register,
     handleSubmit,
@@ -27,6 +31,36 @@ export default function Modal() {
     }
     reset();
   };
+
+  const filteredTasks = priorityFilter
+    ? task.filter((t) => t.priority === priorityFilter)
+    : task;
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
+
+  const handleDeleteClick = (id) => {
+    const allTask = JSON.parse(localStorage.getItem("task"));
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this imaginary file!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        const filtered = allTask.filter((all) => all.id !== id);
+        localStorage.setItem("task", JSON.stringify(filtered));
+        window.location.reload();
+        swal("Poof! Your imaginary file has been deleted!", {
+          icon: "success",
+        });
+      } else {
+        swal("Your imaginary file is safe!");
+      }
+    });
+  };
+
   return (
     <div>
       <button
@@ -91,9 +125,22 @@ export default function Modal() {
         </form>
       </dialog>
       <div className="my-10">
-        <h2 className="text-left text-4xl font-semibold">All Task</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-left text-4xl font-semibold">All Task</h2>
+          <div>
+            <select
+              className="bg-base-100"
+              onChange={(e) => setPriorityFilter(e.target.value)}
+            >
+              <option value="">Filter</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        </div>
         <div className="grid md:grid-cols-2 gap-4 mx-auto lg:grid-cols-3">
-          {task.map((t) => (
+          {currentTasks.map((t) => (
             <div key={t.id}>
               <div className="card w-full bg-base-100 shadow-xl">
                 <div className="card-body">
@@ -107,7 +154,7 @@ export default function Modal() {
                           <a>Edit</a>
                         </li>
                         <li>
-                          <a>Remove</a>
+                          <a onClick={() => handleDeleteClick(t.id)}>Remove</a>
                         </li>
                       </ul>
                     </details>
