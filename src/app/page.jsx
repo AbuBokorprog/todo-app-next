@@ -1,3 +1,4 @@
+import AllTask from "@/component/allTask";
 import Modal from "@/component/modal";
 import React from "react";
 
